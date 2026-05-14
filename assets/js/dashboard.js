@@ -209,6 +209,17 @@ function renderGraficos() {
 // ============================================================
 async function inicializar() {
   try {
+    if (typeof SHEETS !== 'object' || !SHEETS) {
+      throw new Error('Configuração SHEETS não encontrada. Verifique se assets/js/sheets.config.js está carregando.');
+    }
+    const sheetsUrls = Object.values(SHEETS);
+    if (sheetsUrls.some(u => typeof u !== 'string' || u.trim() === '')) {
+      throw new Error('Configuração inválida em SHEETS. Verifique assets/js/sheets.config.js.');
+    }
+    if (sheetsUrls.some(u => u.includes('SPREADSHEET_ID'))) {
+      throw new Error('SPREADSHEET_ID ainda não foi substituído em assets/js/sheets.config.js.');
+    }
+
     const [metaKpi, googleKpi, metaCamp, googleCamp, metaTL, googleTL] = await Promise.all([
       carregarCSV(SHEETS.meta_kpis),
       carregarCSV(SHEETS.google_kpis),
